@@ -3,7 +3,6 @@ import './assets/styles/main.scss'
 import 'vfonts/Lato.css'
 import 'uno.css'
 
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 

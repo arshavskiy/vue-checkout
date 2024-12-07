@@ -1,31 +1,35 @@
 <template>
-  <div class="coupon-code">
-    <h2>Apply Coupon</h2>
-    <input
-      v-model="couponCode"
-      placeholder="Enter coupon code"
-      @keyup.enter="applyCoupon"
-    />
-    <button @click="applyCoupon">Apply</button>
-  </div>
+  <n-space>
+    <div class="coupon-code b-r-black border-1 b-solid p-4">
+      <h4>Apply Coupon</h4>
+      <input v-model="couponCode" placeholder="Enter coupon code" @keyup.enter="applyCoupon" />
+      <n-button
+        strong
+        secondary
+        round
+        type="primary"
+        @click="applyCoupon"
+        :disabled="couponCode === ''"
+      >
+        Apply
+      </n-button>
+    </div>
+  </n-space>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      couponCode: '',
-    };
-  },
-  methods: {
-    applyCoupon() {
-      if (this.couponCode) {
-        this.$emit('apply-coupon', this.couponCode);
-        this.couponCode = ''; // Clear the input field
-      }
-    },
-  },
-};
+<script setup>
+import { ref } from 'vue'
+
+const couponCode = ref('')
+import { NSpace, NButton } from 'naive-ui'
+const emit = defineEmits(['apply-coupon'])
+
+const applyCoupon = () => {
+  if (couponCode.value) {
+    emit('apply-coupon', couponCode.value)
+    couponCode.value = ''
+  }
+}
 </script>
 
 <style>

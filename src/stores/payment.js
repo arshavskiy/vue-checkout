@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia';
-import { getPaymentOptions, getCreditCards } from '../api';
+import { defineStore } from 'pinia'
+import { getPaymentOptions, getCreditCards } from '../api'
 
 export const usePaymentStore = defineStore('payment', {
   state: () => ({
@@ -10,21 +10,21 @@ export const usePaymentStore = defineStore('payment', {
   }),
   actions: {
     async fetchPaymentOptions() {
-      const response = await getPaymentOptions();
-      this.paymentOptions = response.data;
+      const response = await getPaymentOptions()
+      this.paymentOptions = response.data
     },
     async fetchCreditCards() {
-      const response = await getCreditCards();
-      this.creditCards = response.data;
+      const response = await getCreditCards()
+      this.creditCards = response.data
       if (this.creditCards.length > 0) {
-        this.selectedCreditCard = this.creditCards[0];
+        this.selectedCreditCard = this.creditCards[0]
       }
     },
     selectPaymentMethod(method) {
-      this.selectedPaymentMethod = method;
+      this.selectedPaymentMethod = method
     },
     selectCreditCard(cardId) {
-      this.selectedCreditCard = this.creditCards.find((card) => card.id === cardId);
+      this.selectedCreditCard = this.creditCards.find((card) => card.id === cardId)
     },
   },
-});
+})
