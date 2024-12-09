@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { getCart, applyCoupon } from '../api/index.js'
-import { computed } from 'vue'
+import {getCart, applyCoupon, getPlaceOrder, getPlaceOrderEntry} from '../api/index.js'
+import { computed, ref } from 'vue'
 
 const mock = {
   id: 'd6af07614a8140c5be213da45bdc20ad',
@@ -55,33 +55,56 @@ const mock = {
 
 export const useCartStore = defineStore('cart', {
   state: () => ({
-    cart: mock,
+    cart: {},
   }),
-  getters: {},
+  getters: {
+    newTotal: (state) => {
+      let tempTotal = state.cart.items?.reduce(
+        (total, item) => total + item.product.price * item.quantity,
+        0,
+      )
+      if (tempTotal > 0) {
+        tempTotal += state.cart.shipping
+      }
+      return tempTotal
+    },
+    newSubTotal: (state) => {
+      return state.cart.items?.reduce(
+        (total, item) => total + item.product.discountedPrice * item.quantity,
+        0,
+      )
+    },
+  },
   actions: {
-    // getTotal() {
-    //   const tax = (this.cart.tax / 100)
-    //   return (this.cart.items.reduce((total, item) => total + item.product.price * item.quantity, 0) + this.cart.shipping) * (1 + tax);
-    // },
-    // getSubTotal(){
-    //   return this.cart.subtotal = this.cart.items.reduce((total, item) => total + item.product.discountedPrice * item.quantity, 0)
-    // },
+    async subToProduct(row) {
+      if (row.quantity > 0) {
+        this.cart.items.filter((item) => item.id === row.id)[0].quantity = row.quantity - 1
+        const response = await getPlaceOrderEntry(this.cart)
+        if (response.status === 200) this.cart = response.data;
+        return response
+      }
+    },
+    async addToProduct(row) {
+      this.cart.items.filter((item) => item.id === row.id)[0].quantity = row.quantity + 1
+      const response = await getPlaceOrderEntry(this.cart)
+      if (response.status === 200) this.cart = response.data;
+      return response
+    },
     async fetchCart() {
       const response = await getCart()
       this.cart = response.data
+      console.info(response.data.discount)
     },
     async applyCouponCode(couponCode) {
       const response = await applyCoupon(couponCode)
-      debugger
-      if (response.status > 300) {
-        return {
-          status: response.status,
-          statusText: response.statusText,
-        }
+      if (response.status > 400) {
+        return response
+      } else {
+        console.info(response.data.discount)
+        this.cart = response.data
+        console.info(this.cart.discount)
+        return response
       }
-      this.cart = response.data
-      return { status: response.status }
-      // await this.fetchCart(); // Refresh cart
-    },
+    }
   },
 })

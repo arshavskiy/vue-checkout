@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getPaymentOptions, getCreditCards } from '../api'
+import { getPaymentOptions, getCreditCards, selectCreditCard, getPlaceOrder } from '../api'
 
 export const usePaymentStore = defineStore('payment', {
   state: () => ({
@@ -15,7 +15,7 @@ export const usePaymentStore = defineStore('payment', {
     },
     async fetchCreditCards() {
       const response = await getCreditCards()
-      this.creditCards = response.data
+      this.creditCards = response.data.filter((item) => item.cardHolderName)
       if (this.creditCards.length > 0) {
         this.selectedCreditCard = this.creditCards[0]
       }
@@ -23,8 +23,16 @@ export const usePaymentStore = defineStore('payment', {
     selectPaymentMethod(method) {
       this.selectedPaymentMethod = method
     },
-    selectCreditCard(cardId) {
-      this.selectedCreditCard = this.creditCards.find((card) => card.id === cardId)
+    selectCreditCard(cardHolderName) {
+      this.selectedCreditCard = this.creditCards.find(
+        (card) => card.cardHolderName === cardHolderName,
+      )
+    },
+    async setPayment() {
+      return await selectCreditCard(this.selectedCreditCard.id)
+    },
+    async getOrder(orderData) {
+      return await getPlaceOrder(orderData)
     },
   },
 })

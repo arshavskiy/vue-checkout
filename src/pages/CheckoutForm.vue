@@ -1,11 +1,11 @@
 <template>
-  <div id="checkout-form" class="flex">
+  <div id="checkout-form" class="flex" v-if="cart?.items">
     <div>
-      <h1>Checkout</h1>
-      <CartSummary v-if="cart?.items" />
+      <h1 class="ml-6">Checkout</h1>
+      <ProductTable />
     </div>
 
-    <div class="p-8 max-w-500px">
+    <div id="summary" class="p-8 max-w-500px b-1 b-solid">
       <CouponCode @apply-coupon="applyCoupon" />
 
       <div class="mb-4">
@@ -13,6 +13,7 @@
         <div class="flex flex-col">
           <div class="flex justify-between pt-2">
             <div>Subtotal:</div>
+<!--            <div class="font-bold">${{ cartStore.newSubTotal }}</div>-->
             <div class="font-bold">${{ cart.subtotal }}</div>
           </div>
           <hr />
@@ -28,6 +29,7 @@
           <hr />
           <div class="flex justify-between pt-2">
             <div>Total:</div>
+<!--            <div class="font-bold">${{ cartStore.newTotal }}</div>-->
             <div class="font-bold">${{ cart.total }}</div>
           </div>
         </div>
@@ -37,54 +39,46 @@
         v-if="addressStore.addresses.length"
         :addresses="addressStore.addresses"
         :selected-address="addressStore.selectedAddress"
-        @select-address="addressStore.selectAddress"
+        @select-address="selectAddress"
+        @edit-address="editAddress"
       />
 
       <PaymentOptions
+        v-if="paymentStore?.selectedCreditCard"
         :payment-options="paymentStore.paymentOptions"
+        :credit-cards="paymentStore.creditCards"
         :selected-method="paymentStore.selectedPaymentMethod"
         @update-method="paymentStore.selectPaymentMethod"
+        @select-credit="setPaymentCard"
       />
 
-      <!-- Order Review -->
-      <!--      <OrderReview-->
-      <!--        v-if="cart?.items" :cart="cart.items"-->
-      <!--        :address="addressStore.selectedAddress"-->
-      <!--        :payment-method="paymentStore.selectedPaymentMethod"-->
-      <!--        :credit-card="paymentStore.selectedCreditCard"-->
-      <!--      />-->
-
-      <!-- Place Order Button -->
-      <button class="btn-placeOrder" @click="placeOrder">Place Order</button>
+      <n-button type="success" class="w-full mt-4" @click="placeOrder">
+        <div class="font-bold uppercase">Pay Order</div>
+      </n-button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import { useCartStore } from '../stores/cart.js'
 import { usePaymentStore } from '../stores/payment.js'
 import { useAddressStore } from '../stores/address.js'
 
-import { getPlaceOrder } from '../api/index.js'
-
-import CartSummary from '../components/CartSummary.vue'
+import ProductTable from '../components/productTable.vue'
 import PaymentOptions from '../components/PaymentOptions.vue'
 import AddressSelector from '../components/AddressSelector.vue'
 import CouponCode from '../components/CouponCode.vue'
-import OrderReview from '../components/OrderReview.vue'
-import { useMessage } from 'naive-ui'
+import { useMessage, NButton } from 'naive-ui'
 
 const cartStore = useCartStore()
 const paymentStore = usePaymentStore()
 const addressStore = useAddressStore()
 
 const message = useMessage()
-
-const { cart, getTotal } = storeToRefs(cartStore)
-// const {addresses} = storeToRefs(addressStore)
+const { cart } = storeToRefs(cartStore)
 
 const loadInitialData = async () => {
   await Promise.all([
@@ -92,33 +86,45 @@ const loadInitialData = async () => {
     paymentStore.fetchPaymentOptions(),
     paymentStore.fetchCreditCards(),
     addressStore.fetchAddresses(),
-  ]).then((data) => {
-    console.log(cart)
+  ]).then(() => {
+    console.log(cart.value)
   })
 }
 
-const applyCoupon = async (couponCode) => {
-  const status = await cartStore.applyCouponCode(couponCode)
-  debugger
-  if (status > 300) {
-    message.error(String(selectedMethod))
+const setResponseInfo = (res, cb) => {
+  if (res.status > 300) {
+    message.error(res.data || res.statusText)
+  } else {
+    if (cb) {
+      cb(res)
+    }
   }
 }
 
-const placeOrder = async () => {
-  const orderData = {
-    cartId: cartStore.cart.orderId,
-    addressId: addressStore.selectedAddress.id,
-    paymentMethod: paymentStore.selectedPaymentMethod,
-    paymentInfoId:
-      paymentStore.selectedPaymentMethod === 'CreditCard'
-        ? paymentStore.selectedCreditCard.id
-        : null,
-    termsAndConditionsAccepted: true,
-  }
+const applyCoupon = async (couponCode) => {
+  const res = await cartStore.applyCouponCode(couponCode)
+  setResponseInfo(res)
+}
 
-  await getPlaceOrder(orderData)
-  alert('Order placed successfully!')
+const setPaymentCard = async () => {
+  const res = await paymentStore.setPayment()
+  setResponseInfo(res, () => {
+    message.success(String(res.data.saved))
+  })
+}
+
+const selectAddress = async (address) => {
+  const res = await addressStore.selectAddress(address)
+  setResponseInfo(res)
+}
+const editAddress = async (address) => {
+  const res = await addressStore.addAddress(address)
+  setResponseInfo(res)
+}
+
+const placeOrder = async () => {
+  const res = await paymentStore.getOrder(cartStore.cart)
+  setResponseInfo(res)
 }
 
 onMounted(loadInitialData)

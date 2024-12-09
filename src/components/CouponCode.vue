@@ -1,16 +1,14 @@
 <template>
   <n-space>
-    <div class="coupon-code b-r-black border-1 b-solid p-4">
+    <div class="coupon-code b-r-black border-1 b-solid p-4 mb-6">
       <h4>Apply Coupon</h4>
-      <input v-model="couponCode" placeholder="Enter coupon code" @keyup.enter="applyCoupon" />
-      <n-button
-        strong
-        secondary
-        round
-        type="primary"
-        @click="applyCoupon"
-        :disabled="couponCode === ''"
-      >
+      <input
+        v-model="couponCode"
+        placeholder="Enter coupon code"
+        @keyup.enter="applyCoupon"
+        class="mr-4"
+      />
+      <n-button strong secondary type="primary" @click="applyCoupon" :disabled="couponCode === ''">
         Apply
       </n-button>
     </div>
@@ -31,9 +29,3 @@ const applyCoupon = () => {
   }
 }
 </script>
-
-<style>
-.coupon-code {
-  margin-bottom: 20px;
-}
-</style>
