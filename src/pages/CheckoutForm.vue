@@ -13,8 +13,11 @@
         <div class="flex flex-col">
           <div class="flex justify-between pt-2">
             <div>Subtotal:</div>
-<!--            <div class="font-bold">${{ cartStore.newSubTotal }}</div>-->
-            <div class="font-bold">${{ cart.subtotal }}</div>
+
+<!--            for testing only while no API working -->
+            <div class="font-bold">${{ cartStore.newSubTotal }}</div>
+<!--            for on API working -->
+<!--            <div class="font-bold">${{ cart.subtotal }}</div>-->
           </div>
           <hr />
           <div class="flex justify-between pt-2">
@@ -29,8 +32,12 @@
           <hr />
           <div class="flex justify-between pt-2">
             <div>Total:</div>
-<!--            <div class="font-bold">${{ cartStore.newTotal }}</div>-->
-            <div class="font-bold">${{ cart.total }}</div>
+
+<!--            for testing only while no API working -->
+            <div class="font-bold">${{ cartStore.newTotal }}</div>
+
+<!--            for on API working -->
+<!--            <div class="font-bold">${{ cart.total }}</div>-->
           </div>
         </div>
       </div>
