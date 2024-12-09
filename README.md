@@ -21,6 +21,7 @@ npm install
 ```sh
 npm run dev
 ```
+go to you browser and enter the http://localhost:5173/ url
 
 ### Compile and Minify for Production
 
