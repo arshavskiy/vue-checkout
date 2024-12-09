@@ -5,8 +5,8 @@ html {
 }
 
 #app {
-  margin: 0 auto;
-  padding: 2rem;
+  margin: 0;
+  padding-top: 2rem;
   font-weight: normal;
   width: 100%;
   display: flex;
@@ -44,10 +44,12 @@ h3 {
   font-size: x-large;
 }
 
-@media (max-width: 1200px) {
+
+@media (max-width: 1199px) {
   body {
     display: flex;
     justify-content: center;
+    font-size: 12px;
   }
 
   #checkout-form {
@@ -55,10 +57,16 @@ h3 {
     flex-wrap: wrap;
     flex-direction: column;
   }
-}
 
-@media (max-width: 800px) {
   #summary {
     margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  body,
+  #app {
+    padding: 0;
+    margin: 0;
   }
 }

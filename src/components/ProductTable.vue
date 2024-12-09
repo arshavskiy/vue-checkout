@@ -1,14 +1,12 @@
 <template>
-  <n-card id="table">
-    <div class="mb-6">
-      <div class="w-full min-w-480px">
+  <div id="table" class="xl:m-4">
+    <div class="xl:mb-6">
+      <div class="w-full" :class="[maxWidthComputed ? `min-w-${maxWidthComputed}px` :'']">
         <n-data-table
-          :columns="columns"
+          :columns="filteredColumns"
           :data="filteredData"
-          :pagination="pagination"
-          :size="smaller ? 'small' : 'large'"
-          :scroll-x="700"
-          bordered
+          :size="smaller ? 'small' : 'medium'"
+          :max-width="maxWidthComputed"
         />
       </div>
     </div>
@@ -16,22 +14,15 @@
     <!--    <n-button type="primary" class="w-full" @click="placeOrder">-->
     <!--      Place Order-->
     <!--    </n-button>-->
-  </n-card>
+  </div>
 </template>
 
 <script setup>
 import {
   NDataTable,
   NTag,
-  NCard,
-  NSpace,
-  NAvatar,
-  NTooltip,
-  NCheckbox,
-  NCheckboxGroup,
   NButton,
   NImage,
-  NConfigProvider,
   useMessage
 } from 'naive-ui'
 
@@ -43,23 +34,42 @@ import {useCartStore} from '@/stores/cart.js'
 const message = useMessage()
 
 const cartStore = useCartStore()
-const {cart, getSubTotal, getTotal} = storeToRefs(cartStore)
+const {cart} = storeToRefs(cartStore)
+
+const smaller = window.innerWidth < 1199
+const mobile = window.innerWidth < 480
+
+let imageSize = 200
 
 const columns = [
   {
     title: 'Product',
+    extra: 'mobile',
+    render(row) {
+      return h('div', {class: 'flex items-center'}, [
+        h('div', {class: 'flex flex-col'}, [
+          h('div', {class: 'font-bold text-xl xl:p-2'}, [row.product.name]),
+          h('div', {class: 'xl:p-2'}, ['Color: ' + row.product.sizeColor]),
+          h(NTag, {}, ['Sku: ' + row.product.sku]),
+        ]),
+      ])
+    },
+  },
+  {
+    title: 'Product',
+    extra: 'desktop',
     render(row) {
       return h('div', {class: 'flex items-center'}, [
         h(NImage, {
-          width: smaller ? 100 : 200,
-          height: smaller ? 100 / 1.5 : 200 / 1.5,
+          width:  smaller ? imageSize/2 : imageSize,
+          height: smaller ? (imageSize/1.5) / 1.5 : imageSize / 1.5,
           objectFit: 'cover',
           src: row.product.imageUrl,
           style: {marginRight: '40px'},
         }),
         h('div', {class: 'flex flex-col'}, [
-          h('div', {class: 'font-bold text-xl p-2'}, [row.product.name]),
-          h('div', {class: 'p-2'}, ['Color: ' + row.product.sizeColor]),
+          h('div', {class: 'font-bold text-xl xl:p-2'}, [row.product.name]),
+          h('div', {class: 'xl:p-2'}, ['Color: ' + row.product.sizeColor]),
           h(NTag, {}, ['Sku: ' + row.product.sku]),
         ]),
       ])
@@ -94,7 +104,7 @@ const columns = [
           },
           {default: () => ' - '},
         ),
-        h('div', {class: 'flex items-center p-2'}, row.quantity),
+        h('div', {class: 'flex items-center xl:p-2'}, row.quantity),
         h(
           NButton,
           {
@@ -128,7 +138,15 @@ const columns = [
 
 columns.forEach((item) => (item.fixed = 'center'))
 
-const smaller = window.innerWidth < 750
+const filteredColumns = computed(()=>{
+  return mobile
+    ? columns.filter((col) => col.extra !== "desktop")
+    : columns.filter((col) => col.extra !== "moblie");
+})
+
+const maxWidthComputed = computed(() => {
+  return mobile ? String(window.innerWidth - 20) : '1200'
+})
 
 const filteredData = computed(() => {
   return cart.value.items

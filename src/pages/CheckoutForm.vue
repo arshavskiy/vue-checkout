@@ -74,7 +74,7 @@ import { useCartStore } from '../stores/cart.js'
 import { usePaymentStore } from '../stores/payment.js'
 import { useAddressStore } from '../stores/address.js'
 
-import ProductTable from '../components/productTable.vue'
+import ProductTable from '../components/ProductTable.vue'
 import PaymentOptions from '../components/PaymentOptions.vue'
 import AddressSelector from '../components/AddressSelector.vue'
 import CouponCode from '../components/CouponCode.vue'
