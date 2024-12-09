@@ -89,10 +89,6 @@ const options2 = props.creditCards.map((item) => {
   }
 })
 
-const selectedCard = computed(() => {
-  return props.creditCards[0]
-})
-
 const emit = defineEmits(['update-method', 'select-credit'])
 
 const cardSelected = ref(false)

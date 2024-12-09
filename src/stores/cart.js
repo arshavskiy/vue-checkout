@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
-import {getCart, applyCoupon, getPlaceOrder, getPlaceOrderEntry} from '../api/index.js'
-import { computed, ref } from 'vue'
+import {getCart, applyCoupon, getPlaceOrderEntry} from '../api/index.js'
 
 const mock = {
   id: 'd6af07614a8140c5be213da45bdc20ad',
