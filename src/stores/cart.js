@@ -55,6 +55,7 @@ const mock = {
 export const useCartStore = defineStore('cart', {
   state: () => ({
     cart: {},
+    couponCode: null
   }),
   getters: {
     newTotal: (state) => {
@@ -96,7 +97,9 @@ export const useCartStore = defineStore('cart', {
     },
     async applyCouponCode(couponCode) {
       const response = await applyCoupon(couponCode)
+      this.couponCode = couponCode;
       if (response.status > 400) {
+        this.couponCode = null;
         return response
       } else {
         console.info(response.data.discount)
@@ -104,6 +107,11 @@ export const useCartStore = defineStore('cart', {
         console.info(this.cart.discount)
         return response
       }
+    },
+    updateCart(newCart){
+      debugger
+      this.cart = newCart;
     }
+
   },
 })
