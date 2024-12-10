@@ -31,7 +31,7 @@ export const usePaymentStore = defineStore('payment', {
     async setPayment() {
       return await selectCreditCard(this.selectedCreditCard.id)
     },
-    async getOrder(orderData) {
+    async placeOrder(orderData) {
       return await getPlaceOrder(orderData)
     },
   },
