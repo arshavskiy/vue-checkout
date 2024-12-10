@@ -31,20 +31,20 @@ import {computed, h, defineEmits} from 'vue'
 import {storeToRefs} from 'pinia'
 import {useCartStore} from '@/stores/cart.js'
 
-const message = useMessage()
+const message = useMessage();
 
-const cartStore = useCartStore()
-const {cart} = storeToRefs(cartStore)
+const cartStore = useCartStore();
+const {cart} = storeToRefs(cartStore);
 
-const smaller = window.innerWidth < 1199
-const mobile = window.innerWidth < 480
+const smaller = window.innerWidth < 1199;
+const mobile = window.innerWidth < 480;
 
-let imageSize = 200
+let imageSize = 200;
 
 const columns = [
   {
     title: 'Product',
-    extra: 'mobile',
+    key: 'mobile',
     render(row) {
       return h('div', {class: 'flex items-center'}, [
         h('div', {class: 'flex flex-col'}, [
@@ -57,12 +57,12 @@ const columns = [
   },
   {
     title: 'Product',
-    extra: 'desktop',
+    key: 'desktop',
     render(row) {
       return h('div', {class: 'flex items-center'}, [
         h(NImage, {
-          width:  smaller ? imageSize/2 : imageSize,
-          height: smaller ? (imageSize/1.5) / 1.5 : imageSize / 1.5,
+          width: smaller ? imageSize / 2 : imageSize,
+          height: smaller ? (imageSize / 1.5) / 1.5 : imageSize / 1.5,
           objectFit: 'cover',
           src: row.product.imageUrl,
           style: {marginRight: '40px'},
@@ -138,11 +138,13 @@ const columns = [
 
 columns.forEach((item) => (item.fixed = 'center'))
 
-const filteredColumns = computed(()=>{
+const filteredColumns = computed(() => {
   return mobile
-    ? columns.filter((col) => col.extra !== "desktop")
-    : columns.filter((col) => col.extra !== "moblie");
+    ? columns.filter((col) => col.key !== "desktop")
+    : columns.filter((col) => col.key !== "mobile");
 })
+
+console.log('filteredColumns', filteredColumns.value, mobile)
 
 const maxWidthComputed = computed(() => {
   return mobile ? String(window.innerWidth - 20) : '1200'
