@@ -48,6 +48,7 @@
         :selected-address="addressStore.selectedAddress"
         @select-address="selectAddress"
         @edit-address="editAddress"
+        @add-address="addAddress"
       />
 
       <PaymentOptions
@@ -93,6 +94,8 @@ const loadInitialData = async () => {
     paymentStore.fetchPaymentOptions(),
     paymentStore.fetchCreditCards(),
     addressStore.fetchAddresses(),
+    addressStore.getCountries(),
+
   ]).then(() => {
     console.log(cart.value)
   })
@@ -124,14 +127,19 @@ const selectAddress = async (address) => {
   const res = await addressStore.selectAddress(address)
   setResponseInfo(res)
 }
+const addAddress = async (address) => {
+  const res = await addressStore.addAddress(address);
+  debugger
+  setResponseInfo(res)
+}
 const editAddress = async (address) => {
   const res = await addressStore.addAddress(address)
-  setResponseInfo(res)
+  setResponseInfo(res);
 }
 
 const placeOrder = async () => {
-  const res = await paymentStore.getOrder(cartStore.cart)
-  setResponseInfo(res)
+  // const res = await paymentStore.getOrder(cartStore.cart)
+  // setResponseInfo(res)
 }
 
 onMounted(loadInitialData)

@@ -154,9 +154,4 @@ const filteredData = computed(() => {
   return cart.value.items
 })
 
-const emit = defineEmits(['place-order'])
-
-const placeOrder = async () => {
-  emit('place-order')
-}
 </script>

@@ -12,85 +12,76 @@
     </div>
 
     <div class="flex flex-row-reverse mt-2 mb-2">
-      <n-button @click="showModal = true" quaternary type="primary">Edit Address</n-button>
+      <n-button @click="showModal = true" quaternary type="primary">Add Address</n-button>
     </div>
+    <div v-if="showModal">
 
-    <n-modal
-      v-model:show="showModal"
-      transform-origin="center"
-      :closable="true"
-      :mask-closable="true"
-      :size="'small'"
-    >
-      <n-card
-        style="max-width: 500px"
-        title="Add new address"
-        :bordered="false"
-        size="huge"
-        role="dialog"
-        aria-modal="true"
-      >
-        <div>
-          <n-form>
-            <n-form-item label="Address line 1" path="addressLine1">
-              <n-input
-                v-model:value="newAddress.addressLine1"
-                :placeholder="selectedAddress.addressLine1"
-              />
-            </n-form-item>
+      <NForm :model="newAddress" ref="formRef" :rules="rules">
+        <NFormItem label="Address Line 1" path="addressLine1">
+          <NInput v-model:value="newAddress.addressLine1" clearable placeholder="Enter Address Line 1"/>
+        </NFormItem>
 
-            <n-form-item label="Address line 2" path="addressLine2">
-              <n-input
-                v-model:value="newAddress.addressLine2"
-                :placeholder="selectedAddress.addressLine2"
-              />
-            </n-form-item>
+        <NFormItem label="Address Line 2" path="addressLine2">
+          <NInput v-model:value="newAddress.addressLine2" placeholder="Enter Address Line 2"/>
+        </NFormItem>
 
-            <n-form-item label="Address city" path="city">
-              <n-input v-model:value="newAddress.city" :placeholder="selectedAddress.city" />
-            </n-form-item>
+        <NFormItem label="Country" path="country">
+          <NAutoComplete
+            v-model:value="newAddress.country"
+            :options="countryOptions"
+            placeholder="Enter Country"
+            :on-select="getStates"
+            :on-update-value="getStates"
+          />
+        </NFormItem>
 
-            <n-form-item v-if="newAddress.state" label="Address state" path="state">
-              <n-input v-model:value="newAddress.state" :placeholder="selectedAddress.state" />
-            </n-form-item>
+        <NFormItem label="State" path="state">
+          <NAutoComplete
+            v-model:value="newAddress.state"
+            :options="statesOptions"
+            placeholder="Enter State"
 
-            <n-form-item label="Address zipcode" path="zipCode">
-              <n-input v-model:value="newAddress.zipCode" :placeholder="selectedAddress.zipCode" />
-            </n-form-item>
+          />
+        </NFormItem>
+        <NFormItem label="City" path="city">
+          <NInput v-model:value="newAddress.city" placeholder="Enter city"/>
+        </NFormItem>
 
-            <n-form-item label="Address country" path="country">
-              <n-input v-model:value="newAddress.country" :placeholder="selectedAddress.country" />
-            </n-form-item>
-
-            <div class="flex flex-row-reverse mt-4">
-              <n-button type="primary" @click="saveAddress"> Submit </n-button>
-              <n-button type="error" class="mr-2" @click="showModal = false"> Cancel </n-button>
-            </div>
-          </n-form>
+        <NFormItem label="Zip Code" path="zipCode">
+          <NInput v-model:value="newAddress.zipCode" placeholder="Enter Zip Code"/>
+        </NFormItem>
+        <div class="flex flex-row-reverse mb-4">
+          <NButton type="primary" @click="saveAddress" :disabled="formDisabled"> Submit</NButton>
+          <NButton type="error" class="mr-2" @click="showModal = false"> Cancel</NButton>
         </div>
-      </n-card>
-    </n-modal>
+      </NForm>
+
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, defineProps } from 'vue'
-import { storeToRefs } from 'pinia'
+import {ref, defineProps, watch} from 'vue';
+
 import {
-  useMessage,
   NDropdown,
   NButton,
-  NModal,
-  NCard,
   NForm,
-  NSpace,
   NFormItem,
   NInput,
+  NAutoComplete
 } from 'naive-ui'
 
-import { useAddressStore } from '@/stores/address.js'
-
+import {useAddressStore} from '@/stores/address.js'
 const addressStore = useAddressStore()
+
+let statesOptions = [];
+const countryOptions = addressStore.countries.map((c) => {
+  return {
+    label: c,
+    key: c,
+  }
+})
 
 const props = defineProps({
   addresses: {
@@ -104,6 +95,9 @@ const props = defineProps({
 })
 
 const showModal = ref(false)
+const formDisabled = ref(false)
+const formRef = ref(null)
+
 const newAddress = ref({
   addressLine1: '',
   addressLine2: '',
@@ -113,6 +107,27 @@ const newAddress = ref({
   country: '',
 })
 
+const rules = {
+  addressLine1: [
+    {required: true, message: 'Address Line 1 is required', trigger: ['input', 'blur']},
+  ],
+  country: [
+    {required: true, message: 'Country is required', trigger: ['input', 'blur']},
+  ],
+  state: [
+    {required: true, message: 'State is required'},
+  ],
+  city: [
+    {required: true, message: 'City is required', trigger: ['input', 'blur']},
+  ],
+  zipCode: [
+    {required: true, message: 'Zip Code is required', trigger: ['input', 'blur']},
+    {pattern: /^\d{7}$/, message: 'Zip Code must be a 7-digit number', trigger: ['input', 'blur']}
+  ],
+
+};
+
+
 const options = props.addresses.map((item) => {
   return {
     label: item.addressLine1,
@@ -120,12 +135,24 @@ const options = props.addresses.map((item) => {
   }
 })
 
-const emit = defineEmits(['select-address'])
+const emit = defineEmits(['select-address', 'add-address'])
 
 const handleSelect = (address) => {
   emit('select-address', address)
 }
 const saveAddress = () => {
+  formRef.value.validate((errors) => {
+    if (!errors) {
+      console.log('Submitted data:', newAddress.value);
+      if (newAddress) emit('add-address', newAddress.value)
+      showModal.value = false
+    } else {
+      console.error('Validation failed:', errors);
+    }
+  });
+}
+
+const editAddress = () => {
   for (const val in newAddress.value) {
     if (!newAddress.value[val]) {
       newAddress.value[val] = props.selectedAddress[val]
@@ -136,4 +163,29 @@ const saveAddress = () => {
   if (newAddress) emit('edit-address', newAddress.value)
   showModal.value = false
 }
+
+const getStates = async (country) => {
+  if (addressStore.countries.includes(country)) {
+    await addressStore.getStates(country);
+    statesOptions = addressStore.states.map((s) => {
+      return {
+        label: s,
+        key: s,
+      }
+    })
+  }
+}
+
+watch(newAddress.states, (newValue, oldValue) => {
+  console.log(`Name changed from ${oldValue} to ${newValue}`);
+  addressStore.getStates();
+  debugger
+  statesOptions = addressStore.states.map((s) => {
+    return {
+      label: s,
+      key: s,
+    }
+  })
+});
+
 </script>
