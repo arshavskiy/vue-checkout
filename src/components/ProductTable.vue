@@ -1,7 +1,7 @@
 <template>
   <div id="table" class="xl:m-4">
     <div class="xl:mb-6">
-      <div class="w-full" :class="[maxWidthComputed ? `min-w-${maxWidthComputed}px` :'']">
+      <div class="w-full" :class="[maxWidthComputed ? `min-w-${maxWidthComputed}px` : '']">
         <n-data-table
           :columns="filteredColumns"
           :data="filteredData"
@@ -18,38 +18,31 @@
 </template>
 
 <script setup>
-import {
-  NDataTable,
-  NTag,
-  NButton,
-  NImage,
-  useMessage
-} from 'naive-ui'
+import { NDataTable, NTag, NButton, NImage, useMessage } from 'naive-ui'
 
+import { computed, h } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useCartStore } from '@/stores/cart.js'
 
-import {computed, h, defineEmits} from 'vue'
-import {storeToRefs} from 'pinia'
-import {useCartStore} from '@/stores/cart.js'
+const message = useMessage()
 
-const message = useMessage();
+const cartStore = useCartStore()
+const { cart } = storeToRefs(cartStore)
 
-const cartStore = useCartStore();
-const {cart} = storeToRefs(cartStore);
+const smaller = window.innerWidth < 1199
+const mobile = window.innerWidth < 480
 
-const smaller = window.innerWidth < 1199;
-const mobile = window.innerWidth < 480;
-
-let imageSize = 200;
+let imageSize = 200
 
 const columns = [
   {
     title: 'Product',
     key: 'mobile',
     render(row) {
-      return h('div', {class: 'flex items-center'}, [
-        h('div', {class: 'flex flex-col'}, [
-          h('div', {class: 'font-bold text-xl xl:p-2'}, [row.product.name]),
-          h('div', {class: 'xl:p-2'}, ['Color: ' + row.product.sizeColor]),
+      return h('div', { class: 'flex items-center' }, [
+        h('div', { class: 'flex flex-col' }, [
+          h('div', { class: 'font-bold text-xl xl:p-2' }, [row.product.name]),
+          h('div', { class: 'xl:p-2' }, ['Color: ' + row.product.sizeColor]),
           h(NTag, {}, ['Sku: ' + row.product.sku]),
         ]),
       ])
@@ -59,17 +52,17 @@ const columns = [
     title: 'Product',
     key: 'desktop',
     render(row) {
-      return h('div', {class: 'flex items-center'}, [
+      return h('div', { class: 'flex items-center' }, [
         h(NImage, {
           width: smaller ? imageSize / 2 : imageSize,
-          height: smaller ? (imageSize / 1.5) / 1.5 : imageSize / 1.5,
+          height: smaller ? imageSize / 1.5 / 1.5 : imageSize / 1.5,
           objectFit: 'cover',
           src: row.product.imageUrl,
-          style: {marginRight: '40px'},
+          style: { marginRight: '40px' },
         }),
-        h('div', {class: 'flex flex-col'}, [
-          h('div', {class: 'font-bold text-xl xl:p-2'}, [row.product.name]),
-          h('div', {class: 'xl:p-2'}, ['Color: ' + row.product.sizeColor]),
+        h('div', { class: 'flex flex-col' }, [
+          h('div', { class: 'font-bold text-xl xl:p-2' }, [row.product.name]),
+          h('div', { class: 'xl:p-2' }, ['Color: ' + row.product.sizeColor]),
           h(NTag, {}, ['Sku: ' + row.product.sku]),
         ]),
       ])
@@ -88,7 +81,7 @@ const columns = [
     title: 'Quantity',
     key: 'quantity',
     render(row) {
-      return h('div', {class: 'flex items-center items-center'}, [
+      return h('div', { class: 'flex items-center items-center' }, [
         h(
           NButton,
           {
@@ -98,13 +91,12 @@ const columns = [
               if (res.status > 300) {
                 message.error(res.data || res.statusText)
               } else {
-
               }
-            }
+            },
           },
-          {default: () => ' - '},
+          { default: () => ' - ' },
         ),
-        h('div', {class: 'flex items-center xl:p-2'}, row.quantity),
+        h('div', { class: 'flex items-center xl:p-2' }, row.quantity),
         h(
           NButton,
           {
@@ -114,11 +106,10 @@ const columns = [
               if (res.status > 300) {
                 message.error(res.data || res.statusText)
               } else {
-
               }
-            }
+            },
           },
-          {default: () => ' + '},
+          { default: () => ' + ' },
         ),
       ])
     },
@@ -140,8 +131,8 @@ columns.forEach((item) => (item.fixed = 'center'))
 
 const filteredColumns = computed(() => {
   return mobile
-    ? columns.filter((col) => col.key !== "desktop")
-    : columns.filter((col) => col.key !== "mobile");
+    ? columns.filter((col) => col.key !== 'desktop')
+    : columns.filter((col) => col.key !== 'mobile')
 })
 
 console.log('filteredColumns', filteredColumns.value, mobile)
@@ -153,5 +144,4 @@ const maxWidthComputed = computed(() => {
 const filteredData = computed(() => {
   return cart.value.items
 })
-
 </script>

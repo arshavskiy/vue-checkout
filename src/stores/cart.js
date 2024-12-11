@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import {getCart, applyCoupon, getPlaceOrderEntry} from '../api/index.js'
+import { getCart, applyCoupon, getPlaceOrderEntry } from '../api/index.js'
 
 const mock = {
   id: 'd6af07614a8140c5be213da45bdc20ad',
@@ -55,7 +55,7 @@ const mock = {
 export const useCartStore = defineStore('cart', {
   state: () => ({
     cart: {},
-    couponCode: null
+    couponCode: null,
   }),
   getters: {
     newTotal: (state) => {
@@ -80,14 +80,14 @@ export const useCartStore = defineStore('cart', {
       if (row.quantity > 0) {
         this.cart.items.filter((item) => item.id === row.id)[0].quantity = row.quantity - 1
         const response = await getPlaceOrderEntry(this.cart)
-        if (response.status === 200) this.cart = response.data;
+        if (response.status === 200) this.cart = response.data
         return response
       }
     },
     async addToProduct(row) {
       this.cart.items.filter((item) => item.id === row.id)[0].quantity = row.quantity + 1
       const response = await getPlaceOrderEntry(this.cart)
-      if (response.status === 200) this.cart = response.data;
+      if (response.status === 200) this.cart = response.data
       return response
     },
     async fetchCart() {
@@ -97,9 +97,9 @@ export const useCartStore = defineStore('cart', {
     },
     async applyCouponCode(couponCode) {
       const response = await applyCoupon(couponCode)
-      this.couponCode = couponCode;
+      this.couponCode = couponCode
       if (response.status > 400) {
-        this.couponCode = null;
+        this.couponCode = null
         return response
       } else {
         console.info(response.data.discount)
@@ -108,10 +108,9 @@ export const useCartStore = defineStore('cart', {
         return response
       }
     },
-    updateCart(newCart){
+    updateCart(newCart) {
       debugger
-      this.cart = newCart;
-    }
-
+      this.cart = newCart
+    },
   },
 })

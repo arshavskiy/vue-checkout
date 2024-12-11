@@ -12,5 +12,3 @@ export const validators = {
   postalCode: (value) => /^\d{5}$/.test(value) || 'Postal code must be 5 digits.',
   couponCode: (value) => /^MyCoupon\d{2}$/.test(value) || 'Invalid coupon code format.',
 }
-
-

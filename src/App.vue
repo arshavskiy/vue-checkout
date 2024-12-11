@@ -1,10 +1,8 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import CheckoutForm from './pages/CheckoutForm.vue'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <!--  <header class="flex items-center justify-between">-->
   <!--  </header>-->
   <RouterView />
 </template>

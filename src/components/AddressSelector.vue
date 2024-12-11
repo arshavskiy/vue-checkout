@@ -15,14 +15,17 @@
       <n-button @click="showModal = true" quaternary type="primary">Add Address</n-button>
     </div>
     <div v-if="showModal">
-
       <NForm :model="newAddress" ref="formRef" :rules="rules">
         <NFormItem label="Address Line 1" path="addressLine1">
-          <NInput v-model:value="newAddress.addressLine1" clearable placeholder="Enter Address Line 1"/>
+          <NInput
+            v-model:value="newAddress.addressLine1"
+            clearable
+            placeholder="Enter Address Line 1"
+          />
         </NFormItem>
 
         <NFormItem label="Address Line 2" path="addressLine2">
-          <NInput v-model:value="newAddress.addressLine2" placeholder="Enter Address Line 2"/>
+          <NInput v-model:value="newAddress.addressLine2" placeholder="Enter Address Line 2" />
         </NFormItem>
 
         <NFormItem label="Country" path="country">
@@ -40,42 +43,33 @@
             v-model:value="newAddress.state"
             :options="statesOptions"
             placeholder="Enter State"
-
           />
         </NFormItem>
         <NFormItem label="City" path="city">
-          <NInput v-model:value="newAddress.city" placeholder="Enter city"/>
+          <NInput v-model:value="newAddress.city" placeholder="Enter city" />
         </NFormItem>
 
         <NFormItem label="Zip Code" path="zipCode">
-          <NInput v-model:value="newAddress.zipCode" placeholder="Enter Zip Code"/>
+          <NInput v-model:value="newAddress.zipCode" placeholder="Enter Zip Code" />
         </NFormItem>
         <div class="flex flex-row-reverse mb-4">
           <NButton type="primary" @click="saveAddress" :disabled="formDisabled"> Submit</NButton>
           <NButton type="error" class="mr-2" @click="showModal = false"> Cancel</NButton>
         </div>
       </NForm>
-
     </div>
   </div>
 </template>
 
 <script setup>
-import {ref, defineProps, watch} from 'vue';
+import { ref, defineProps, watch } from 'vue'
 
-import {
-  NDropdown,
-  NButton,
-  NForm,
-  NFormItem,
-  NInput,
-  NAutoComplete
-} from 'naive-ui'
+import { NDropdown, NButton, NForm, NFormItem, NInput, NAutoComplete } from 'naive-ui'
 
-import {useAddressStore} from '@/stores/address.js'
+import { useAddressStore } from '@/stores/address.js'
 const addressStore = useAddressStore()
 
-let statesOptions = [];
+let statesOptions = []
 const countryOptions = addressStore.countries.map((c) => {
   return {
     label: c,
@@ -109,24 +103,20 @@ const newAddress = ref({
 
 const rules = {
   addressLine1: [
-    {required: true, message: 'Address Line 1 is required', trigger: ['input', 'blur']},
+    { required: true, message: 'Address Line 1 is required', trigger: ['input', 'blur'] },
   ],
-  country: [
-    {required: true, message: 'Country is required', trigger: ['input', 'blur']},
-  ],
-  state: [
-    {required: true, message: 'State is required'},
-  ],
-  city: [
-    {required: true, message: 'City is required', trigger: ['input', 'blur']},
-  ],
+  country: [{ required: true, message: 'Country is required', trigger: ['input', 'blur'] }],
+  state: [{ required: true, message: 'State is required' }],
+  city: [{ required: true, message: 'City is required', trigger: ['input', 'blur'] }],
   zipCode: [
-    {required: true, message: 'Zip Code is required', trigger: ['input', 'blur']},
-    {pattern: /^\d{7}$/, message: 'Zip Code must be a 7-digit number', trigger: ['input', 'blur']}
+    { required: true, message: 'Zip Code is required', trigger: ['input', 'blur'] },
+    {
+      pattern: /^\d{7}$/,
+      message: 'Zip Code must be a 7-digit number',
+      trigger: ['input', 'blur'],
+    },
   ],
-
-};
-
+}
 
 const options = props.addresses.map((item) => {
   return {
@@ -143,13 +133,13 @@ const handleSelect = (address) => {
 const saveAddress = () => {
   formRef.value.validate((errors) => {
     if (!errors) {
-      console.log('Submitted data:', newAddress.value);
-      if (newAddress) emit('add-address', newAddress.value)
+      console.log('Submitted data:', newAddress.value)
+      if (newAddress.value) emit('add-address', newAddress.value)
       showModal.value = false
     } else {
-      console.error('Validation failed:', errors);
+      console.error('Validation failed:', errors)
     }
-  });
+  })
 }
 
 const editAddress = () => {
@@ -160,13 +150,13 @@ const editAddress = () => {
   }
 
   newAddress.value.id = props.selectedAddress.id
-  if (newAddress) emit('edit-address', newAddress.value)
+  if (newAddress.value) emit('edit-address', newAddress.value)
   showModal.value = false
 }
 
 const getStates = async (country) => {
   if (addressStore.countries.includes(country)) {
-    await addressStore.getStates(country);
+    await addressStore.getStates(country)
     statesOptions = addressStore.states.map((s) => {
       return {
         label: s,
@@ -176,9 +166,9 @@ const getStates = async (country) => {
   }
 }
 
-watch(newAddress.states, (newValue, oldValue) => {
-  console.log(`Name changed from ${oldValue} to ${newValue}`);
-  addressStore.getStates();
+watch(newAddress.value.states, (newValue, oldValue) => {
+  console.log(`Name changed from ${oldValue} to ${newValue}`)
+  addressStore.getStates()
   debugger
   statesOptions = addressStore.states.map((s) => {
     return {
@@ -186,6 +176,5 @@ watch(newAddress.states, (newValue, oldValue) => {
       key: s,
     }
   })
-});
-
+})
 </script>

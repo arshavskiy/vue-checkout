@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { NButton, NDropdown, useMessage, NCode } from 'naive-ui'
 import { usePaymentStore } from '@/stores/payment.js'
 import { storeToRefs } from 'pinia'
@@ -105,9 +105,3 @@ const handleSelect2 = (selectedCredit) => {
   emit('select-credit')
 }
 </script>
-
-<style>
-.payment-options {
-  margin-bottom: 20px;
-}
-</style>

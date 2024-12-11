@@ -51,12 +51,14 @@ export const sendApi = {
 }
 
 export const getCart = async () => sendApi.get(`${API_CART_BASE}`)
-export const applyCoupon = async (couponCode) => sendApi.post(`${API_CART_BASE}/coupon?couponCode=${couponCode}`)
+export const applyCoupon = async (couponCode) =>
+  sendApi.post(`${API_CART_BASE}/coupon?couponCode=${couponCode}`)
 
 //
 export const getAddresses = async () => sendApi.get(API_ADDRESS_BASE)
 export const addAddress = async (newAddress) => sendApi.post(API_ADDRESS_BASE, newAddress)
-export const updateAddress = async (address) => sendApi.patch(`${API_ADDRESS_BASE}/${address.id}`, address)
+export const updateAddress = async (address) =>
+  sendApi.patch(`${API_ADDRESS_BASE}/${address.id}`, address)
 export const selectAddress = async (id) => sendApi.put(`${API_ADDRESS_BASE}/select/${id}`)
 export const getCountries = async () => sendApi.get(`${API_ADDRESS_BASE}/countries`)
 export const getStates = async (country) => sendApi.get(`${API_ADDRESS_BASE}/states/${country}`)
@@ -69,5 +71,7 @@ export const getPlaceOrderEntry = (orderData) => sendApi.post(`${API_URL}/OrderE
 export const getPaymentOptions = async () => sendApi.get(`${API_PAYMENT_BASE}/options`)
 export const getCreditCards = async () => sendApi.get(`${API_PAYMENT_BASE}/creditcards`)
 export const addCreditCard = async (data) => sendApi.post(`${API_PAYMENT_BASE}/creditcards`, data)
-export const selectCreditCard = async (cardId) => sendApi.put(`${API_PAYMENT_BASE}/creditcards/${cardId}`)
-export const selectPurchaseOrder = async (orderNumber) => sendApi.put(`${API_PAYMENT_BASE}/purchase-order/${orderNumber}`)
+export const selectCreditCard = async (cardId) =>
+  sendApi.put(`${API_PAYMENT_BASE}/creditcards/${cardId}`)
+export const selectPurchaseOrder = async (orderNumber) =>
+  sendApi.put(`${API_PAYMENT_BASE}/purchase-order/${orderNumber}`)

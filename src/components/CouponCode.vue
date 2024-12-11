@@ -1,7 +1,7 @@
 <template>
   <n-space>
     <div class="coupon-code b-r-black border-1 b-solid p-4 mb-6">
-      <h4 >Apply Coupon</h4>
+      <h4>Apply Coupon</h4>
       <input
         v-model="couponCode"
         placeholder="Enter coupon code"
@@ -16,13 +16,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
 const cartStore = useCartStore()
-const {couponCode} = storeToRefs(cartStore)
+const { couponCode } = storeToRefs(cartStore)
 
 import { NSpace, NButton } from 'naive-ui'
-import {useCartStore} from "@/stores/cart.js";
-import {storeToRefs} from "pinia";
+import { useCartStore } from '@/stores/cart.js'
+import { storeToRefs } from 'pinia'
 const emit = defineEmits(['apply-coupon'])
 
 const applyCoupon = () => {

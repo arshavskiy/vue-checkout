@@ -1,12 +1,19 @@
-import {defineStore} from 'pinia'
-import {getAddresses, selectAddress, addAddress, updateAddress, getCountries, getStates} from '../api'
+import { defineStore } from 'pinia'
+import {
+  getAddresses,
+  selectAddress,
+  addAddress,
+  updateAddress,
+  getCountries,
+  getStates,
+} from '../api'
 
 export const useAddressStore = defineStore('address', {
   state: () => ({
     addresses: [],
     selectedAddress: null,
     countries: [],
-    states: []
+    states: [],
   }),
   actions: {
     async fetchAddresses() {
@@ -24,24 +31,24 @@ export const useAddressStore = defineStore('address', {
     async editAddress(addresses) {
       const response = await updateAddress(addresses)
       this.selectedAddress = response.data
-      return response;
+      return response
     },
     async addAddress(addresses) {
-      delete addresses.id;
+      delete addresses.id
       const response = await addAddress(addresses)
       this.selectedAddress = response.data
-      if (response.data.saved){
+      if (response.data.saved) {
         this.addresses.push(response.data)
       }
-      return response;
+      return response
     },
     async getCountries() {
-      const response = await getCountries();
-      this.countries = response.data;
+      const response = await getCountries()
+      this.countries = response.data
     },
     async getStates(country) {
-      const response = await getStates(country);
-      this.states = response.data;
-    }
+      const response = await getStates(country)
+      this.states = response.data
+    },
   },
 })
